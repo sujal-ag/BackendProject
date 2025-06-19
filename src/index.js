@@ -11,7 +11,7 @@ dotenv.config({
 connectDB()
 .then( () => {
 
-    app.on(error, (error) => {
+    app.on("error", (error) => {
         console.log("Express is unable to talk to our db");
         throw error;
     })
@@ -22,7 +22,7 @@ connectDB()
     })
 }
 )
-.catch(erorr => console.log("MONGO DB connection failed, ",error))
+.catch((error) => console.log("MONGO DB connection failed, ",error))
 
 
 
