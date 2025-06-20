@@ -15,7 +15,7 @@ const registerUser = asyncHandler( async (req, res) => {
     // Step 8 - check for user creation
     // Step 9 - return response
 
-    const {fullName, username, email, passwrd} = req.body
+    const {fullName, username, email, password} = req.body
     console.log("email: ",email);
 
     // if(fullName === ""){
@@ -23,12 +23,12 @@ const registerUser = asyncHandler( async (req, res) => {
     // }
 
     if(
-        [fullName, email, username, passwrd].some((field) => field?.trim() === "")
+        [fullName, email, username, password].some((field) => field?.trim() === "")
     ){
         throw new ApiError(400, "All fields are required")
     }
 
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{username}, {email}]
     })
 
@@ -36,8 +36,8 @@ const registerUser = asyncHandler( async (req, res) => {
         throw new ApiError(409, "User with email or username already exist")
     }
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    const avatarLocalPath = req.files?.avatar?.[0]?.path;
+    const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
 
     if(!avatarLocalPath){
         throw new ApiError(400, "Avatar file is required")
@@ -46,8 +46,8 @@ const registerUser = asyncHandler( async (req, res) => {
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
-    if(avatar){
-        throw new ApiError(400, "Avatar file is required")
+    if(!avatar){
+        throw new ApiError(400, "Avatar upload failed")
     }
 
     const user = await User.create({
@@ -68,11 +68,9 @@ const registerUser = asyncHandler( async (req, res) => {
     }
 
     return res.status(201).json(
-        new ApiResponse(
-        statusCode = 200,
-        data = createdUser,
-        message = "User registered successfully")
+        new ApiResponse(200, createdUser, "User registered successfully")
     )
+
 
 } )
 
