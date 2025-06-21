@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
 },{timestamps: true})
 
 userSchema.pre("save", async function(next) {
-    if(!this.isModified("password")) 
+    if(!this.isModified("password")) // mtlb ki jab password change ho bas tab hi isko run krna wrna koi kaam nhi hai
         return next();
     this.password = await bcrypt.hash(this.password, 10)
     next();
